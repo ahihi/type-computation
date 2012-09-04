@@ -1,10 +1,10 @@
 {-# LANGUAGE TypeFamilies, UndecidableInstances #-}
 
--- Natural number arithmetic
+-- Integer arithmetic
 
-module NatArithmetic where
+module IntArithmetic where
 
--- Natural numbers
+-- Integers
 data Z   -- Zero
 data S a -- Successor of a (a = Z or a = S a')
 data N a -- Negative numbers (a = Z or a = S a')
