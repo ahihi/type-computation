@@ -2,12 +2,26 @@
 
 module Arithmetic where
 
+import Boolean
+    ( False
+    , True
+    , And
+    )
+
 -- Natural numbers
 data Z   -- Zero
 data S n -- Successor of n (n = Z or n = S n')
 
 type N0 = Z
 type N1 = S N0
+type N2 = S N1
+
+-- Natural equality
+type family NEq m n
+type instance NEq Z Z           = True
+type instance NEq Z (S n')      = False
+type instance NEq (S m') Z      = False
+type instance NEq (S m') (S n') = NEq m' n'
 
 -- Natural addition
 type family NAdd m n
@@ -27,8 +41,22 @@ type instance NPow m (S n') = NMul m (NPow m n')
 -- Integers
 data I a b -- Integers of the form a-b (a and b are natural numbers)
 
+type I_1 = I N0 N1
 type I0 = I N0 N0
 type I1 = I N1 N0
+type I2 = I N2 N0
+
+-- Integer from natural
+type family IFromN n
+type instance IFromN n = I n I0
+
+-- Integer equality
+type family IEq m n
+type instance IEq m n = INormEq (INorm m) (INorm n)
+
+-- Normalized integer equality (helper function for IEq)
+type family INormEq m n
+type instance INormEq (I am bm) (I an bn) = And (NEq am an) (NEq bm bn)
 
 -- Integer normalization
 type family INorm n
@@ -58,34 +86,3 @@ type instance IMul (I am bm) (I an bn)
 type family IPow m n
 type instance IPow m Z      = I1
 type instance IPow m (S n') = IMul m (IPow m n')
-
--- Booleans
-data False
-data True
-
--- Conjunction
-type family And a b
-type instance And False b = False
-type instance And True b  = b
-
--- Negation
-type family Not a
-type instance Not False = True
-type instance Not True = False
-
--- Disjunction
-type Or a b = Not (And (Not a) (Not b))
-
--- Implication
-type Impl a b = Not (And a (Not b))
-
--- Equivalence
-type Equiv a b = And (Impl a b) (Impl b a)
-
--- Exclusive OR
-type Xor a b = Not (Equiv a b)
-
--- Conditional expression
-type family If p t e
-type instance If True t e  = t
-type instance If False t e = e
