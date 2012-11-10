@@ -7,6 +7,11 @@ import Boolean
     , True
     , And
     )
+import Ordering
+    ( LT
+    , EQ
+    , GT
+    )
 
 -- Natural numbers
 data Z   -- Zero
@@ -16,12 +21,12 @@ type N0 = Z
 type N1 = S N0
 type N2 = S N1
 
--- Natural equality
-type family NEq m n
-type instance NEq Z Z           = True
-type instance NEq Z (S n')      = False
-type instance NEq (S m') Z      = False
-type instance NEq (S m') (S n') = NEq m' n'
+-- Natural comparison
+type family NCmp m n
+type instance NCmp Z Z           = EQ
+type instance NCmp Z (S n')      = LT
+type instance NCmp (S m') Z      = GT
+type instance NCmp (S m') (S n') = NCmp m' n'
 
 -- Natural addition
 type family NAdd m n
@@ -50,13 +55,9 @@ type I2 = I N2 N0
 type family IFromN n
 type instance IFromN n = I n I0
 
--- Integer equality
-type family IEq m n
-type instance IEq m n = INormEq (INorm m) (INorm n)
-
--- Normalized integer equality (helper function for IEq)
-type family INormEq m n
-type instance INormEq (I am bm) (I an bn) = And (NEq am an) (NEq bm bn)
+-- Integer comparison
+type family ICmp m n
+type instance ICmp (I am bm) (I an bn) = NCmp (NAdd am bn) (NAdd an bm)
 
 -- Integer normalization
 type family INorm n
